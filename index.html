@@ -1,0 +1,113 @@
+<!DOCTYPE html> 
+<html>
+<head>
+	<title>Page Title</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="jquery.mobile-1.4.3.min.css" />
+	<script src="jquery-2.1.1.min.js"></script>
+	<script src="jquery.mobile-1.4.3.min.js"></script>
+</head>
+<body>
+    <!-- Página 1 -->
+    <div id="pagina1" data-role="page">
+        <!-- cabecera -->
+        <div data-role="header" data-theme="a">
+            <h1>Lista</h1>
+            <a href="#pagina2" class="ui-btn-right ui-btn ui-btn-b ui-btn-inline ui-mini ui-corner-all ui-btn-icon-right" data-transition='flip'>Añadir</a>
+        </div>
+        
+        <!-- cuerpo -->
+        <div data-role="main" data-theme="a">
+            <!-- input para el filtro -->
+            <form class="ui-filterable">
+                <input id="filterBasic-input" data-type="search">
+            </form>
+            <!-- lista -->
+            <ul id="lista" data-role="listview" data-filter="true" data-input="#filterBasic-input">
+                
+            </ul>
+        </div>        
+    </div>
+    
+    
+    
+    <!-- Página 2 -->
+    <div id="pagina2" data-role="page">
+        <!-- cabecera -->
+        <div data-role="header" data-theme="a">
+            <a data-rel="back">Volver</a>
+            <h1>Añadir tarea</h1>
+        </div>
+        <!-- cuerpo -->
+        <div data-role="main" data-theme="a">
+            <!-- Formulario de añadir tareas -->
+            <br/>
+            <label for="valor">Text input:</label>
+            <input id="valor" type="text" name="valor" value="">
+            <br />
+            <button id="addList" class="ui-shadow ui-btn ui-corner-all">Añadir</button>
+        </div>
+        
+    </div>
+</body>
+<script>
+    // documento listo
+    $(document).ready(function(){
+        // justo arrancar disparamos esta función para pintar la lista
+        actualizarLista();
+        
+        
+        
+        $("#pagina1").on( "pageshow", function( event, ui){
+            // cada vez que mostramos esta pantalla listamos las tareas
+            actualizarLista();
+        });
+        
+        // click al añadir tarea
+        $("#addList").on("click",function(){
+            var lista = [];
+            if(typeof localStorage.lista !== 'undefined'){
+            // obtenemos la lista del Storage haciendo un parse para convertirlo en objeto
+                lista = JSON.parse(localStorage.getItem("lista"));
+                
+            }
+            // creamos un objeto el cual iremos añadiendo campos
+            var objeto = {};
+            
+            // le damos el valor al objeto.valor
+            objeto.valor = $("#valor").val();
+            // añadimos el objeto al array lista
+            lista.push(objeto);
+            // volvemos a salvar la lista pasandola a cadena y sobreescribiendola
+            localStorage.setItem("lista",JSON.stringify(lista));
+            $.mobile.back();
+        });
+        
+        function actualizarLista(){
+            
+            if(typeof localStorage.lista !== 'undefined'){
+                // obtenemos la lista parseada a objeto
+
+                var lista = JSON.parse(localStorage.getItem("lista"));
+
+                //la recorremos y añadimos a la lista
+                if(lista.length>0){
+                    // vaciamos la lista para despues rellenar
+                    $("#lista").html("");
+                    $.each(lista, function(i, item) {
+                       var li = "<li>"+ lista[i].valor + "</li>";
+                        $("#lista").append(li);
+                    });
+                }
+                // refrescamos lista
+                $("#lista").listview("refresh");
+            }
+        }
+        
+    });
+    
+
+    
+    
+</script>
+</html>
